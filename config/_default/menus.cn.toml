@@ -12,9 +12,19 @@ url = "/blog"
 weight = 2
 
 [[main]]
-name = "分类标签"
+name = "文档"
+url = "/docs"
+weight = 3
+
+[[main]]
+name = "按分类"
 url = "/categories"
-waight = 3
+waight = 4
+
+[[main]]
+name = "按标签"
+url = "/tags"
+waight = 5
 
 # [[main]]
 # name = "About"

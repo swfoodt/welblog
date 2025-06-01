@@ -1,0 +1,35 @@
+{{ define "main" }}
+  {{ partial "page-header" . }}
+{{/*  <p>当前 type: {{ .Type }}</p>  */}}
+  {{/*  <section class="max-w-5xl mx-auto px-4 py-12">
+    <h1 class="text-4xl font-bold text-center mb-12">文档总览</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {{ range $key, $doc := site.Data.docs }}
+        <a
+          href="/docs/{{ $key }}/"
+          class="block p-6 rounded-2xl shadow-lg hover:shadow-xl transition border border-gray-200 bg-white">
+          <h2 class="text-2xl font-semibold mb-2">{{ $doc.title }}</h2>
+          <p class="text-gray-600 text-sm">{{ $doc.description }}</p>
+        </a>
+      {{ end }}
+    </div>
+  </section>  */}}
+  <div class="container">
+  <section class="max-w-5xl mx-auto px-4 py-12">
+  {{/*  <h1 class="text-4xl font-bold text-center mb-12">文档总览</h1>  */}}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {{ range $key, $doc := site.Data.docs }}
+    <a href="/docs/{{ $key }}/"
+   class="block p-6 rounded-2xl border transition shadow-sm
+          hover:shadow-md
+          border-gray-200 bg-white hover:bg-gray-50
+          dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800">
+
+      <h2 class="text-2xl font-semibold mb-2 text-text-dark dark:text-white">{{ $doc.title }}</h2>
+      <p class="text-text-dark dark:text-white text-sm leading-relaxed">{{ $doc.description }}</p>
+    </a>
+    {{ end }}
+  </div>
+</section>
+</div>
+{{ end }}

@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="ml-4 border-l-2 pl-4 mb-6">
+    <h2 class="text-xl font-semibold mb-2">{{ .title }}</h2>
+    <ul class="list-disc pl-5 space-y-1">
+      {{ range .pages }}
+        <li>
+          <a
+            href="{{ .path }}"
+            class="text-text-dark dark:text-white hover:text-gray-400 hover:underline transition">
+            {{ .title }}
+          </a>
+        </li>
+      {{ end }}
+      {{ range .sections }}
+        {{ partial "docs/section-item.html" . }}
+      {{ end }}
+    </ul>
+  </div>
+</div>

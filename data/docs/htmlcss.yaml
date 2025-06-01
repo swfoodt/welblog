@@ -1,0 +1,28 @@
+title: htmlcss
+description: HTML/CSS 笔记合集
+
+sections: 
+  - title: HTML 入门
+    pages:
+      - title: HTML 基础介绍
+        path: /blog/front-end/html/html-basics/
+      - title: HTML 实践样例
+        path: /blog/front-end/html/html-example/
+      - title: HTML5 新增特性
+        path: /blog/front-end/html/html-html5/
+    sections: []
+  - title: CSS 入门
+    pages:
+      - title: CSS 书写顺序
+        path: /blog/Front-end/CSS/css-order/
+      - title: CSS 选择器
+        path: /blog/Front-end/CSS/css-selector/
+      - title: CSS 显示与定位
+        path: /blog/Front-end/CSS/css-display-position/
+      - title: CSS 三大特性
+        path: /blog/Front-end/CSS/css-features/
+      - title: CSS 盒子模型
+        path: /blog/Front-end/CSS/css-box-model/
+      - title: CSS 小Tips
+        path: /blog/Front-end/CSS/css-tips/
+    sections: []

@@ -2,8 +2,8 @@ home: 主页
 read_more: 阅读全文
 send: 发送
 related_posts: 相关笔记
-categories: 分类标签
-tags: tags
+categories: 分类
+tags: 关键词
 toc: 内容目录
 share: 分享
 search_input_placeholder: 搜索笔记...

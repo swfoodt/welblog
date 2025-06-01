@@ -1,1 +1,18 @@
 /* Add your own custom styles here */
+/* 让 Markdown 表格中的代码块正确显示样式 */
+/* code {
+  background-color: #f4f4f4;
+  font-family: Menlo, Monaco, Consolas, monospace;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 90%;
+} */
+code::before,
+code::after {
+  content: none !important;
+}
+/* code {
+  background-color: #f4f4f4;
+  padding: 2px 4px;
+  border-radius: 4px;
+} */

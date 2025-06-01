@@ -47,7 +47,7 @@
           <div class="row items-start justify-between">
             {{ $tags:= .Params.tags }}
             {{ if $tags }}
-              <div class="lg:col-6 mb-10 flex items-center lg:mb-0">
+              <div class="w-full mb-10 flex flex-wrap items-center lg:mb-0">
                 <h5 class="mr-3">{{ T "tags" }} :</h5>
                 <ul>
                   {{ range $i,$p:= $tags }}
@@ -62,17 +62,17 @@
                 </ul>
               </div>
             {{ end }}
-            <div class="lg:col-6 flex items-center lg:justify-end">
+            {{/*  <div class="lg:col-6 flex items-center lg:justify-end">
               <h5>{{ T "share" }} :</h5>
               {{ partial "social-share" (dict "Context" . "Class" "share-icons" "Title" .Title "Whatsapp" false "Telegram" false "Linkedin" false "Pinterest" false "Tumblr" false "Vk" false "Reddit" false) }}
-            </div>
+            </div>  */}}
           </div>
           <!-- comments -->
-          {{ if site.Config.Services.Disqus.Shortname }}
+          {{/*  {{ if site.Config.Services.Disqus.Shortname }}
             <div class="mt-20">
               {{ template "_internal/disqus.html" . }}
             </div>
-          {{ end }}
+          {{ end }}  */}}
         </article>
       </div>
 

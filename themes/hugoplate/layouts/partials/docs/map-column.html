@@ -1,0 +1,35 @@
+{{ $level := .level }}
+{{ $sections := .sections }}
+
+{{ if gt (len $sections) 0 }}
+  <div class="flex flex-col space-y-6 min-w-[180px]">
+    {{ range $section := $sections }}
+      <div>
+        <!-- Section Title -->
+        <div class="px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 font-semibold rounded shadow">
+          {{ $section.title }}
+        </div>
+
+        <!-- Pages -->
+        {{ if $section.pages }}
+          <ul class="mt-2 ml-4 space-y-1 text-sm">
+            {{ range $section.pages }}
+              <li>
+                <a href="{{ .path }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                  {{ .title }}
+                </a>
+              </li>
+            {{ end }}
+          </ul>
+        {{ end }}
+
+        <!-- Recursive Sections -->
+        {{ if $section.sections }}
+          <div class="mt-4 flex space-x-8">
+            {{ partial "docs/map-column.html" (dict "sections" $section.sections "level" (add $level 1)) }}
+          </div>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+{{ end }}

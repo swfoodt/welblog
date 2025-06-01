@@ -1,0 +1,17 @@
+{{ define "main" }}
+  {{ partial "page-header" . }}
+
+<section class="max-w-6xl mx-auto px-6 py-12">
+  {{ $slug := .Params.slug }}
+  {{ $doc := index site.Data.docs $slug }}
+
+  <div class="flex justify-center">
+    <div class="w-full max-w-3xl space-y-6">
+      {{ range $doc.sections }}
+        {{ partial "docs/section-item.html" . }}
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+{{ end }}
