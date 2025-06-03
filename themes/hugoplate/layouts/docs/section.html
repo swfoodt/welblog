@@ -97,7 +97,7 @@
     <div class="container">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- 左侧文档树 -->
-        <div class="lg:col-span-4">
+        <div class="lg:col-span-4 ">
           {{ partial "docs/tree-recursive.html" (dict "parent" "/" "tree" $tree "nodeMap" $nodeMap "current" . "slug" $slug) }}
         </div>
 

@@ -40,7 +40,7 @@
   {{ $depth := cond (eq $path "/") 0 (len $segments) }}
   {{ $indent := printf "ml-%d" (add $depth 4) }}
 
-  <div class="{{ $indent }} py-1" x-data="{ open: true }">
+  {{/*  <div class="{{ $indent }} py-1" x-data="{ open: true }">
     <div class="cursor-pointer select-none" @click="open = !open">
       <span class="mr-1 text-sm" x-text="open ? '▼' : '▶'"></span>
       <a href="{{ printf "/docs%s" $path | relURL }}" class="text-gray-500 font-semibold hover:underline">
@@ -60,5 +60,34 @@
 
       {{ partial "docs/tree-recursive.html" (dict "parent" $path "tree" $tree "nodeMap" $nodeMap "current" $current "slug" $slug) }}
     </div>
+  </div>  */}}
+
+  <div class="{{ $indent }} py-1" x-data="{ open: true }">
+    <div class="cursor-pointer select-none" @click="open = !open">
+      <span class="mr-1 text-sm" x-text="open ? '▼' : '▶'"></span>
+      <a href="{{ printf "/docs%s" $path | relURL }}"
+        class="font-semibold hover:underline transition-colors text-gray-700 dark:text-white dark:hover:text-gray-300">
+        {{ index (last 1 $segments) 0 }}
+      </a>
+    </div>
+
+    <div x-show="open" class="ml-4 space-y-1">
+      {{ range (sort (where $pages "File.TranslationBaseName" "!=" "_index") "Params.docmeta.weight") }}
+        <div class="text-sm">
+          <a href="{{ .RelPermalink }}"
+            class="transition-colors hover:underline
+                    {{ if eq .RelPermalink $current.RelPermalink }}
+                      font-bold text-black dark:text-white
+                    {{ else }}
+                      text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white
+                    {{ end }}">
+            {{ .Params.docmeta.title | default .Title }}
+          </a>
+        </div>
+      {{ end }}
+
+      {{ partial "docs/tree-recursive.html" (dict "parent" $path "tree" $tree "nodeMap" $nodeMap "current" $current "slug" $slug) }}
+    </div>
   </div>
+
 {{ end }}
