@@ -92,11 +92,11 @@ html 增加了很多语义化标签，比如`<header>`、`<footer>`、`<nav>`、
 - `input`标签新增`tel`,可以用来**输入电话号码**。
 - `input`标签新增`time`,可以用来**选择时间**。
 
-:::info 样例显示
+{{<notice "info">}}
 
 可以移步[w3school](https://www.w3school.com.cn/html/html_form_attributes.asp)查看样例。
 
-:::
+{{</notice>}}
 
 - html5 的目的也有减少外部插件的依赖，例如`<video>`标签，可以直接在页面中播放视频，而不需要额外的插件。同样的，`<audio>`标签也可以直接在页面中播放音频。
 
