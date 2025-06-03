@@ -3,7 +3,7 @@
 
   <section class="max-w-6xl mx-auto px-6 py-12">
     {{ $slug := .Params.docmeta.id }}
-    {{ $pages := where site.Pages "Params.docmeta.id" $slug }}
+    {{ $pages := where site.RegularPages "Params.docmeta.id" $slug }}
 
     {{/* 构造 nodeMap: path => slice<Page> */}}
     {{ $nodeMap := dict }}
@@ -78,7 +78,7 @@
 
     {{/* 渲染目录树和文章列表 */}}
 
-    <div class="grid grid-cols-12 gap-6">
+    {{/*  <div class="grid grid-cols-12 gap-6">
       <div class="col-span-4">
         {{ partial "docs/tree-recursive.html" (dict "parent" "/" "tree" $tree "nodeMap" $nodeMap "current" . "slug" $slug) }}
       </div>
@@ -92,9 +92,30 @@
         {{ else }}
           <p class="text-gray-400">当前目录无文章。</p>
         {{ end }}
+      </div>
+    </div>  */}}
+    <div class="container">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 左侧文档树 -->
+        <div class="lg:col-span-4">
+          {{ partial "docs/tree-recursive.html" (dict "parent" "/" "tree" $tree "nodeMap" $nodeMap "current" . "slug" $slug) }}
+        </div>
 
-        
+        <!-- 右侧文章列表 -->
+        <div class="lg:col-span-8">
+          {{ if $articles }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {{ range $articles }}
+                {{ partial "components/blog-card.html" . }}
+              {{ end }}
+            </div>
+          {{ else }}
+            <p class="text-gray-400">当前目录无文章。</p>
+          {{ end }}
+        </div>
       </div>
     </div>
+
+
   </section>
 {{ end }}
