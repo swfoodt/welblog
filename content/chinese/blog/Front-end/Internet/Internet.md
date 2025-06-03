@@ -7,6 +7,11 @@ tags: ["Internet", "HTTP", "Web 浏览器", "Hosting"]
 author: "swfoodt"
 description: "介绍 Internet 的工作原理、HTTP 协议、Web 浏览器的工作原理"
 slug: "internet-introduction"
+docmeta:
+    id: internet网络
+    path: internet网络/Internet是什么
+    title: "有关 Internet"
+    weight: 1
 ---
 
 ### Internet 是如何工作的

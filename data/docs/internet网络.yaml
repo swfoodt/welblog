@@ -1,0 +1,9 @@
+id: internet网络
+routes:
+    internet网络/Internet是什么:
+        - title: 有关 Internet
+          url: /blog/Internet/
+          weight: 1
+          path: internet网络/Internet是什么
+          id: internet网络
+          source: content\chinese\blog\Front-end\Internet\Internet.md

@@ -7,6 +7,11 @@ tags: ["HTML", "css", "CSS特性", "前端入门"]
 author: "swfoodt"
 description: "介绍 CSS 的一些小技巧和常用属性"
 slug: "css-tips"
+docmeta:
+    id: 前端基础
+    path: 前端基础/CSS
+    title: "CSS 小tips"
+    weight: 6
 ---
 ### 属性
 

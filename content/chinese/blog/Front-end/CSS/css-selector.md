@@ -7,6 +7,11 @@ tags: ["HTML", "css", "选择器", "前端入门"]
 author: "swfoodt"
 description: "介绍 CSS 选择器的种类和用法，帮助前端入门学习者理解如何选中 HTML 元素并应用样式"
 slug: "css-selector"
+docmeta:
+    id: 前端基础
+    path: 前端基础/CSS
+    title: "CSS 选择器"
+    weight: 2
 ---
 
 ### css 标签选择器

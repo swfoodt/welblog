@@ -1,0 +1,55 @@
+{{ define "main" }}
+  {{ partial "page-header" . }}
+
+  <section class="max-w-6xl mx-auto px-6 py-12">
+    {{ $slug := .Params.slug }}
+
+    {{/* 获取所有属于当前文档的页面（文章 + 虚拟目录） */}}
+    {{ $all := where site.Pages "Params.docmeta.id" $slug }}
+
+    {{/* 构造 path => node 的 map，方便后续快速查找 */}}
+    {{ $nodeMap := dict }}
+    {{ range $all }}
+      {{ $path := .Params.docmeta.path | default "" }}
+      {{ $nodeMap = merge $nodeMap (dict $path .) }}
+    {{ end }}
+    {{/* 收集所有中间目录（非叶子文章路径） */}}
+    {{ $allPaths := slice }}
+
+    {{ range $all }}
+      {{ $rawPath := .Params.docmeta.path | default "" }}
+      {{ $segments := split $rawPath "/" }}
+      {{ $acc := "" }}
+
+      {{ range $segments }}
+        {{ if ne . "" }}
+          {{ $acc = print $acc "/" . }}
+          {{ $trimmed := trim $acc "/" }}
+          {{ if not (in $allPaths $trimmed) }}
+            {{ $allPaths = $allPaths | append $trimmed }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    {{/* 构建路径 → 子路径列表 的映射结构 */}}
+    {{ $tree := dict }}
+    {{ range $allPaths }}
+      {{ $full := . }}
+      {{ $parts := split $full "/" }}
+      {{ $parent := delimit (slice (delimit (first (sub (len $parts) 1) $parts) "/")) "/" }}
+      {{ $parent = cond (eq $parent "") "" (print $parent "/") }}
+      {{ $current := print $full "/" }}
+
+      {{ $children := index $tree $parent | default slice }}
+      {{ $children = $children | append $current }}
+      {{ $tree = merge $tree (dict $parent $children) }}
+
+    {{ end }}
+    <p class="text-sm text-gray-400">tree：{{ $tree }}</p>
+    <p class="text-sm text-gray-400">nodeMap：{{ $nodeMap }}</p>
+    
+    {{/* 渲染根目录（空路径）开始的所有子项 */}}
+    {{ partial "docs/tree-recursive.html" (dict "parent" "/" "tree" $tree "nodeMap" $nodeMap) }}
+  </section>
+
+{{ end }}

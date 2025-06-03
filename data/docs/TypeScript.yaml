@@ -1,0 +1,65 @@
+id: TypeScript
+routes:
+    TypeScript/TS语法:
+        - title: 数据类型
+          url: /blog/types/
+          weight: 1
+          path: TypeScript/TS语法
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\types.md
+        - title: 接口
+          url: /blog/interface/
+          weight: 2
+          path: TypeScript/TS语法
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\interface.md
+        - title: 类
+          url: /blog/Class/
+          weight: 3
+          path: TypeScript/TS语法
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\Class.md
+        - title: 函数
+          url: /blog/function/
+          weight: 3
+          path: TypeScript/TS语法
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\function.md
+        - title: 类与接口
+          url: /blog/classandInterface/
+          weight: 4
+          path: TypeScript/TS语法
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\classandInterface.md
+        - title: 枚举
+          url: /blog/enum/
+          weight: 5
+          path: TypeScript/TS语法
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\enum.md
+        - title: 泛型
+          url: /blog/Generics/
+          weight: 6
+          path: TypeScript/TS语法
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\Generics.md
+        - title: 补充
+          url: /blog/more/
+          weight: 7
+          path: TypeScript/TS语法
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\more.md
+    TypeScript/hello-typescript:
+        - title: Hello TypeScript
+          url: /blog/Hello/
+          weight: 1
+          path: TypeScript/hello-typescript
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\Hello.md
+    TypeScript/why-typescript:
+        - title: 为什么要使用 TypeScript
+          url: /blog/WhyTypeScript/
+          weight: 1
+          path: TypeScript/why-typescript
+          id: TypeScript
+          source: content\chinese\blog\Front-end\TypeScript\WhyTypeScript.md

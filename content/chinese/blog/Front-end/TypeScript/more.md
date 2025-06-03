@@ -7,6 +7,11 @@ tags: ["TypeScript", "前端入门", "类型别名", "类型断言"]
 author: "swfoodt"
 description: "类型别名、类型断言和第三方库的引入"
 slug: "why-typescript"
+docmeta:
+    id: TypeScript
+    path: TypeScript/TS语法
+    title: "补充"
+    weight: 7
 ---
 
 # 类型别名

@@ -7,6 +7,11 @@ tags: ["HTML", "css", "CSS书写顺序", "前端入门"]
 author: "swfoodt"
 description: "介绍 CSS 书写顺序的最佳实践，帮助前端开发者提高代码可读性和性能"
 slug: "css-order"
+docmeta:
+    id: 前端基础
+    path: 前端基础/CSS
+    title: "CSS 书写顺序"
+    weight: 1
 ---
 
 - **css 书写顺序**：布局定位属性 > 自身样式 > 文本样式 > 其他样式。

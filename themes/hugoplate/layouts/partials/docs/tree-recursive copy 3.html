@@ -1,0 +1,52 @@
+{{ $parent := .parent }}
+{{ $tree := .tree }}
+{{ $nodeMap := .nodeMap }}
+{{ $current := .current }}
+
+{{ $children := index $tree $parent | default slice }}
+<pre>
+--- parent: {{ $parent }}
+--- children: {{ $children }}
+</pre>
+{{/* 将路径构造成包含权重的 entry，用于排序 */}}
+{{ $entries := slice }}
+{{ range $children }}
+  {{ $raw := . }}
+  {{ $standard := "" }}
+  {{ if eq $raw "/" }}
+    {{ $standard = "/" }}
+  {{ else }}
+    {{ $standard = print "/" (trim $raw "/") "/" }}
+  {{ end }}
+  {{ $page := index $nodeMap $standard }}
+  {{ $weight := 0 }}
+  {{ if $page }}
+    {{ $weight = $page.Params.docmeta.weight | default 0 }}
+  {{ end }}
+  {{ $entry := dict "path" $standard "weight" $weight }}
+  {{ $entries = $entries | append $entry }}
+{{ end }}
+{{ $sorted := sort $entries "weight" }}
+
+{{ range $sorted }}
+  {{ $path := .path }}
+  {{ $page := index $nodeMap $path }}
+  {{ $segments := split (trim $path "/") "/" }}
+  {{ $depth := cond (eq $path "/") 0 (len $segments) }}
+  {{ $indent := printf "ml-%d" (mul $depth 4) }}
+
+  <div class="{{ $indent }} py-1">
+    {{ if $page }}
+      <a href="{{ $page.RelPermalink }}"
+         class="text-blue-600 hover:underline {{ if eq $page.RelPermalink $current.RelPermalink }}font-bold text-black{{ end }}">
+        {{ with $page.Params.docmeta.title }}{{ . }}{{ else }}{{ $page.Title }}{{ end }}
+      </a>
+    {{ else }}
+      <span class="text-gray-500 font-semibold">
+        {{ index (last 1 (split (trim $path "/") "/")) 0 }}
+      </span>
+    {{ end }}
+  </div>
+
+  {{ partial "docs/tree-recursive.html" (dict "parent" $path "tree" $tree "nodeMap" $nodeMap "current" $current) }}
+{{ end }}

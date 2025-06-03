@@ -7,6 +7,11 @@ tags: ["TypeScript", "前端入门"]
 author: "swfoodt"
 description: "为什么要使用 TypeScript？TypeScript 的优势是什么？"
 slug: "why-typescript"
+docmeta:
+    id: TypeScript
+    path: TypeScript/why-typescript
+    title: "为什么要使用 TypeScript"
+    weight: 1
 ---
 
 ## 什么是 TypeScript

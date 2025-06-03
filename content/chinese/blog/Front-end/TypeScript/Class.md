@@ -7,6 +7,11 @@ tags: ["TypeScript", "前端入门", "接口", "类"]
 author: "swfoodt"
 description: "TypeScript 中的类是面向对象编程的核心概念。本文介绍了类的基本概念、成员方法、静态方法、继承等特性，并提供了示例代码。"
 slug: "type-class"
+docmeta:
+    id: TypeScript
+    path: TypeScript/TS语法
+    title: "类"
+    weight: 3
 ---
 # Class 类
 

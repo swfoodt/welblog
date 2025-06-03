@@ -1,0 +1,58 @@
+id: 前端基础
+routes:
+    前端基础/CSS:
+        - title: CSS 书写顺序
+          url: /blog/css-order/
+          weight: 1
+          path: 前端基础/CSS
+          id: 前端基础
+          source: content\chinese\blog\Front-end\CSS\css-order.md
+        - title: CSS 选择器
+          url: /blog/css-selector/
+          weight: 2
+          path: 前端基础/CSS
+          id: 前端基础
+          source: content\chinese\blog\Front-end\CSS\css-selector.md
+        - title: CSS 显示与定位
+          url: /blog/css-display-position/
+          weight: 3
+          path: 前端基础/CSS
+          id: 前端基础
+          source: content\chinese\blog\Front-end\CSS\css-display-position.md
+        - title: CSS 三大特性
+          url: /blog/css-features/
+          weight: 4
+          path: 前端基础/CSS
+          id: 前端基础
+          source: content\chinese\blog\Front-end\CSS\css-features.md
+        - title: CSS 盒子模型
+          url: /blog/css-box-model/
+          weight: 5
+          path: 前端基础/CSS
+          id: 前端基础
+          source: content\chinese\blog\Front-end\CSS\css-box-model.md
+        - title: CSS 小tips
+          url: /blog/css-tips/
+          weight: 6
+          path: 前端基础/CSS
+          id: 前端基础
+          source: content\chinese\blog\Front-end\CSS\css-tips.md
+    前端基础/HTML:
+        - title: HTML 基础介绍
+          url: /blog/html-basics/
+          weight: 1
+          path: 前端基础/HTML
+          id: 前端基础
+          source: content\chinese\blog\Front-end\HTML\html-basics.md
+        - title: HTML 部分样例
+          url: /blog/html-example/
+          weight: 2
+          path: 前端基础/HTML
+          id: 前端基础
+          source: content\chinese\blog\Front-end\HTML\html-example.md
+        - title: HTML5 新增内容
+          url: /blog/html-html5/
+          weight: 3
+          path: 前端基础/HTML
+          id: 前端基础
+          source: content\chinese\blog\Front-end\HTML\html-html5.md

@@ -1,13 +1,25 @@
 ---
-title: "HTML部分样例"
-date: 2021-05-31T15:00:00+08:00
+author: swfoodt
+categories:
+    - 前端基础
+    - HTML
+date: "2021-05-31T15:00:00+08:00"
+description: ' HTML 的基础结构样例'
+docmeta:
+    id: 前端基础
+    path: 前端基础/HTML
+    title: "HTML 部分样例"
+    weight: 2
 draft: false
-categories: ["前端基础", "HTML"]
-tags: ["HTML", "标签语义", "网页结构"]
-author: "swfoodt"
-description: " HTML 的基础结构样例"
-slug: "html-example"
+slug: html-example
+tags:
+    - HTML
+    - 标签语义
+    - 网页结构
+title: HTML 部分样例
 ---
+
+
 
 ### 说了些定义之后， html 具体可以做到什么呢？
 在本记录中，通过一个简单的 HTML 页面示例来展示 HTML 的基本用法和常见标签。  

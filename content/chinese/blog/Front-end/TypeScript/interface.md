@@ -7,6 +7,11 @@ tags: ["TypeScript", "前端入门", "接口"]
 author: "swfoodt"
 description: "TypeScript 中的接口（Interfaces）是对行为的抽象，具体如何行动需要由类去实现。本文介绍了接口的基本用法和特点。"
 slug: "interface"
+docmeta:
+    id: TypeScript
+    path: TypeScript/TS语法
+    title: "接口"
+    weight: 2
 ---
 
 # interface 接口

@@ -7,6 +7,11 @@ tags: ["HTML", "css", "盒子模型", "前端入门"]
 author: "swfoodt"
 description: "介绍 CSS 盒子模型，包括内容、内边距、边框和外边距，并解释如何使用 box-sizing 属性实现所见即所得的效果"
 slug: "css-box-model"
+docmeta:
+    id: 前端基础
+    path: 前端基础/CSS
+    title: "CSS 盒子模型"
+    weight: 5
 ---
 ### 盒子模型
 

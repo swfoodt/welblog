@@ -1,17 +1,100 @@
 {{ define "main" }}
   {{ partial "page-header" . }}
 
-<section class="max-w-6xl mx-auto px-6 py-12">
-  {{ $slug := .Params.slug }}
-  {{ $doc := index site.Data.docs $slug }}
+  <section class="max-w-6xl mx-auto px-6 py-12">
+    {{ $slug := .Params.docmeta.id }}
+    {{ $pages := where site.Pages "Params.docmeta.id" $slug }}
 
-  <div class="flex justify-center">
-    <div class="w-full max-w-3xl space-y-6">
-      {{ range $doc.sections }}
-        {{ partial "docs/section-item.html" . }}
+    {{/* 构造 nodeMap: path => slice<Page> */}}
+    {{ $nodeMap := dict }}
+    {{ range $pages }}
+      {{ $path := print "/" (trim (.Params.docmeta.path | default "") "/") "/" }}
+      {{ $existing := index $nodeMap $path }}
+      {{ if not $existing }}
+        {{ $existing = slice }}
       {{ end }}
-    </div>
-  </div>
-</section>
+      {{ $combined := slice }}
+      {{ range $existing }}
+        {{ $combined = $combined | append . }}
+      {{ end }}
+      {{ $combined = $combined | append . }}
+      {{ $nodeMap = merge $nodeMap (dict $path $combined) }}
+    {{ end }}
 
+    {{/* 构造所有路径（含虚拟目录） */}}
+    {{ $allPaths := slice }}
+    {{ range $pages }}
+      {{ $raw := .Params.docmeta.path | default "" }}
+      {{ $segments := split $raw "/" }}
+      {{ $acc := "" }}
+      {{ range $segments }}
+        {{ if ne . "" }}
+          {{ $acc = print $acc "/" . }}
+          {{ if not (in $allPaths $acc) }}
+            {{ $allPaths = $allPaths | append $acc }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    {{ range $allPaths }}
+      {{ $p := print "/" (trim . "/") "/" }}
+      {{ if not (index $nodeMap $p) }}
+        {{ $nodeMap = merge $nodeMap (dict $p (slice)) }}
+      {{ end }}
+    {{ end }}
+
+    {{ $.Scratch.Set "tree" (dict) }}
+    {{ range $allPaths }}
+      {{ $p := print "/" (trim . "/") "/" }}
+      {{ $parts := split (trim $p "/") "/" }}
+      {{ $parent := cond (gt (len $parts) 1) (print "/" (delimit (first (sub (len $parts) 1) $parts) "/") "/") "/" }}
+      {{ $tree := $.Scratch.Get "tree" }}
+      {{ $existing := index $tree $parent }}
+      {{ if not $existing }}
+        {{ $existing = slice }}
+      {{ end }}
+      {{ $updated := slice }}
+      {{ range $existing }}
+        {{ $updated = $updated | append . }}
+      {{ end }}
+      {{ $updated = $updated | append $p }}
+      {{ $.Scratch.SetInMap "tree" $parent $updated }}
+    {{ end }}
+
+    {{ $tree := $.Scratch.Get "tree" }}
+    {{ $currentPath := print "/" (trim (.Params.docmeta.path | default "") "/") "/" }}
+    {{/*  {{ $articles := index $nodeMap $currentPath }}  */}}
+
+    {{ $articles := slice }}
+    {{ if or (eq $currentPath "/") (eq $currentPath (print "/" $slug "/")) }}
+      {{/* 如果是文档首页（根目录），则展示全部 */}}
+      {{ $articles = $pages }}
+    {{ else }}
+      {{ $articles = index $nodeMap $currentPath }}
+    {{ end }}
+
+    {{/*  <p class="text-sm text-gray-400">nodeMap: {{ $nodeMap }}</p>  */}}
+
+    {{/* 渲染目录树和文章列表 */}}
+
+    <div class="grid grid-cols-12 gap-6">
+      <div class="col-span-4">
+        {{ partial "docs/tree-recursive.html" (dict "parent" "/" "tree" $tree "nodeMap" $nodeMap "current" . "slug" $slug) }}
+      </div>
+      <div class="col-span-8">
+        {{ if $articles }}
+          <div class="grid grid-cols-2 gap-4">
+            {{ range $articles }}
+              {{ partial "components/blog-card.html" . }}
+            {{ end }}
+          </div>
+        {{ else }}
+          <p class="text-gray-400">当前目录无文章。</p>
+        {{ end }}
+
+        
+      </div>
+    </div>
+  </section>
 {{ end }}

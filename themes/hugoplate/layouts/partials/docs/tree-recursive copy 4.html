@@ -1,0 +1,67 @@
+{{ $parent := .parent }}
+{{ $tree := .tree }}
+{{ $nodeMap := .nodeMap }}
+{{ $current := .current }}
+
+{{ $children := index $tree $parent | default slice }}
+
+{{/* 构造 path + weight 列表并排序 */}}
+{{ $entries := slice }}
+{{ range $children }}
+  {{ $raw := . }}
+  {{ $path := cond (eq $raw "/") "/" (print "/" (trim $raw "/") "/") }}
+  {{ $page := index $nodeMap $path }}
+  {{ $weight := 0 }}
+  {{ if and $page (isset $page.Params.docmeta "weight") }}
+    {{ $weight = $page.Params.docmeta.weight }}
+  {{ end }}
+  {{ $entries = $entries | append (dict "path" $path "weight" $weight) }}
+{{ end }}
+{{ $sorted := sort $entries "weight" }}
+
+{{ range $sorted }}
+  {{ $path := .path }}
+  {{ $page := index $nodeMap $path }}
+  {{ $segments := split (trim $path "/") "/" }}
+  {{ $depth := cond (eq $path "/") 0 (len $segments) }}
+  {{ $indent := printf "ml-%d" (mul $depth 4) }}
+
+  <div class="{{ $indent }} py-1">
+    {{ if and $page (ne (print "/" (trim $page.Params.docmeta.path "/") "/") $path) }}
+      {{/* 说明这个路径不是这篇文章绑定的路径，仅是中间目录路径 */}}
+      <span class="text-gray-500 font-semibold">
+        {{ index $segments (sub (len $segments) 1) }}
+      </span>
+    {{ else if $page }}
+      <a href="{{ $page.RelPermalink }}"
+         class="text-blue-600 hover:underline {{ if eq $page.RelPermalink $current.RelPermalink }}font-bold text-black{{ end }}">
+        {{ with $page.Params.docmeta.title }}{{ . }}{{ else }}{{ $page.Title }}{{ end }}
+      </a>
+    {{ else }}
+      <span class="text-gray-500 font-semibold">
+        {{ index $segments (sub (len $segments) 1) }}
+      </span>
+    {{ end }}
+  </div>
+
+  {{/* 渲染当前目录下直接归属的文章 */}}
+  {{ $articles := slice }}
+  {{ $dir := trim $path "/" }}
+  {{ range $nodeMap }}
+    {{ $doc := . }}
+    {{ if and $doc (eq (trim $doc.Params.docmeta.path "/") $dir) }}
+      {{ $articles = $articles | append $doc }}
+    {{ end }}
+  {{ end }}
+  {{ range (sort $articles "Params.docmeta.weight") }}
+    <div class="{{ $indent }} ml-4 text-sm text-blue-500">
+      <a href="{{ .RelPermalink }}"
+         class="hover:underline {{ if eq .RelPermalink $current.RelPermalink }}font-bold text-black{{ end }}">
+        {{ .Params.docmeta.title | default .Title }}
+      </a>
+    </div>
+  {{ end }}
+
+  {{/* 递归子路径 */}}
+  {{ partial "docs/tree-recursive.html" (dict "parent" $path "tree" $tree "nodeMap" $nodeMap "current" $current) }}
+{{ end }}

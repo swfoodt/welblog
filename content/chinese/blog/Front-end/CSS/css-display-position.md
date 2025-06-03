@@ -7,6 +7,11 @@ tags: ["HTML", "css", "position", "前端入门"]
 author: "swfoodt"
 description: "介绍 CSS 显示模式、浮动定位和 position 定位"
 slug: "css-display-position"
+docmeta:
+    id: 前端基础
+    path: 前端基础/CSS
+    title: "CSS 显示与定位"
+    weight: 3
 ---
 
 ### css 显示模式

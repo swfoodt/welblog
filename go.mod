@@ -3,6 +3,8 @@ module hugoplate.netlify.app
 go 1.21
 
 require (
+	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/adrg/frontmatter v0.2.0 // indirect
 	github.com/gethugothemes/hugo-modules/accordion v0.0.0-20250512035231-bb1514d411e2 // indirect
 	github.com/gethugothemes/hugo-modules/adsense v0.0.0-20250512035231-bb1514d411e2 // indirect
 	github.com/gethugothemes/hugo-modules/components/announcement v0.0.0-20250512035231-bb1514d411e2 // indirect
@@ -28,4 +30,6 @@ require (
 	github.com/gethugothemes/hugo-modules/videos v0.0.0-20250512035231-bb1514d411e2 // indirect
 	github.com/hugomods/mermaid v0.1.4 // indirect
 	github.com/zeon-studio/hugoplate v0.0.0-20250507095558-974f11b1e3ff // indirect
+	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

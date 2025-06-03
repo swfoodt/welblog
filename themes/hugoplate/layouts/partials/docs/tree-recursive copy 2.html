@@ -1,0 +1,49 @@
+{{ $parent := .parent }}
+{{ $tree := .tree }}
+{{ $nodeMap := .nodeMap }}
+{{ $current := .current }}
+{{/* 函数：标准化路径为 Hugo 树结构键 */}}
+
+{{ $children := index $tree $parent | default slice }}
+<pre>
+--- parent: {{ $parent }}
+--- children: {{ $children }}
+</pre>
+{{/* 将路径转成带 weight 的对象用于排序 */}}
+{{ $entries := slice }}
+{{ range $children }}
+  {{ $path := . }}
+  {{ $page := index $nodeMap $path }}
+  {{ $weight := 0 }}
+  {{ if $page }}
+    {{ $weight = $page.Params.docmeta.weight | default 0 }}
+  {{ end }}
+  {{ $entry := dict "path" $path "weight" $weight }}
+  {{ $entries = $entries | append $entry }}
+{{ end }}
+{{ $sorted := sort $entries "weight" }}
+
+{{ range $sorted }}
+  {{ $raw := .path }}
+  {{ $path := $raw | trim "/" | printf "/%s/" }}
+  {{ $page := index $nodeMap $path }}
+  {{ $segments := split (trim $path "/") "/" }}
+  {{ $depth := cond (eq $path "/" ) 0 (len $segments) }}
+  {{ $indent := printf "ml-%d" (mul $depth 4) }}
+
+  <div class="{{ $indent }} py-1">
+    {{ if $page }}
+      <a href="{{ $page.RelPermalink }}"
+         class="text-blue-600 hover:underline {{ if eq $page.RelPermalink $current.RelPermalink }}font-bold text-black{{ end }}">
+        {{ with $page.Params.docmeta.title }}{{ . }}{{ else }}{{ $page.Title }}{{ end }}
+      </a>
+    {{ else }}
+      <span class="text-gray-500 font-semibold">
+        {{ index (last 1 (split (trim $path "/") "/")) 0 }}
+      </span>
+    {{ end }}
+  </div>
+
+  {{ partial "docs/tree-recursive.html" (dict "parent" $path "tree" $tree "nodeMap" $nodeMap "current" $current) }}
+{{ end }}
+

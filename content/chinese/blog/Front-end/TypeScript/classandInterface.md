@@ -7,6 +7,11 @@ tags: ["TypeScript", "前端入门", "接口", "类"]
 author: "swfoodt"
 description: "TypeScript 中的类与接口是面向对象编程的核心概念。本文介绍了如何使用接口来抽离特性，提高代码的复用性和灵活性。"
 slug: "class-and-interface"
+docmeta:
+    id: TypeScript
+    path: TypeScript/TS语法
+    title: "类与接口"
+    weight: 4
 ---
 # 类与接口
 

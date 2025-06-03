@@ -1,13 +1,24 @@
 ---
-title: "html5 新增内容"
-date: 2021-05-31T15:00:00+08:00
+author: swfoodt
+categories:
+    - 前端基础
+    - HTML
+date: "2021-05-31T15:00:00+08:00"
+description: ' html5 新增内容介绍'
+docmeta:
+    id: 前端基础
+    path: 前端基础/HTML
+    title: "HTML5 新增内容"
+    weight: 3
 draft: false
-categories: ["前端基础", "HTML"]
-tags: ["HTML", "语义化标签"]
-author: "swfoodt"
-description: " html5 新增内容介绍"
-slug: "html-html5"
+slug: html-html5
+tags:
+    - HTML
+    - 语义化标签
+title: html5 新增内容
 ---
+
+
 
 ## html5 新增内容
 
@@ -17,11 +28,11 @@ html 增加了很多语义化标签，比如`<header>`、`<footer>`、`<nav>`、
 
 许多原先使用 div 实现的区域划分可以使用更多的**语义化标签**来实现，使得 html 文档的结构更加清晰。
 
-:::tip 标签改动
+{{<notice "info">}}
 
 例如上一篇文章所提到的`<b>`,`<i>`标签，已经不在被用作加粗字体和斜体字体的标签，而是标识独立的语句片段，而加粗和斜体的样式可以通过 css 来实现。这样做的目的是**让内容的展示和样式的设置分离**。
 
-:::
+{{</notice>}}
 
 ### 新增表单元素
 
