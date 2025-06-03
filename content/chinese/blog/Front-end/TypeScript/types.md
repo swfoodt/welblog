@@ -8,8 +8,8 @@ author: "swfoodt"
 description: "TypeScript 数据类型介绍，包括基础类型、any 类型、联合类型、数组、元组等"
 slug: "ts-data-type"
 docmeta:
-    id: TypeScript
-    path: TypeScript/TS语法
+    id: typescript
+    path: typescript/ts语法
     title: "数据类型"
     weight: 1
 ---

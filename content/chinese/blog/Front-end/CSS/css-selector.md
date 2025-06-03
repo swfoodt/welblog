@@ -9,7 +9,7 @@ description: "介绍 CSS 选择器的种类和用法，帮助前端入门学习�
 slug: "css-selector"
 docmeta:
     id: 前端基础
-    path: 前端基础/CSS
+    path: 前端基础/css
     title: "CSS 选择器"
     weight: 2
 ---

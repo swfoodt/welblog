@@ -8,8 +8,8 @@ author: "swfoodt"
 description: "类型别名、类型断言和第三方库的引入"
 slug: "why-typescript"
 docmeta:
-    id: TypeScript
-    path: TypeScript/TS语法
+    id: typescript
+    path: typescript/ts语法
     title: "补充"
     weight: 7
 ---

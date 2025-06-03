@@ -7,7 +7,7 @@ date: "2021-05-31T15:00:00+08:00"
 description: ' HTML 的基础结构样例'
 docmeta:
     id: 前端基础
-    path: 前端基础/HTML
+    path: 前端基础/html
     title: "HTML 部分样例"
     weight: 2
 draft: false

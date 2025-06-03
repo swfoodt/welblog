@@ -9,7 +9,7 @@ description: "介绍 CSS 的一些小技巧和常用属性"
 slug: "css-tips"
 docmeta:
     id: 前端基础
-    path: 前端基础/CSS
+    path: 前端基础/css
     title: "CSS 小tips"
     weight: 6
 ---

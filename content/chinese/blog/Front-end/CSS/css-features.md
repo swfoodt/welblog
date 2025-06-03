@@ -9,7 +9,7 @@ description: "介绍 CSS 的三大特性：继承、层叠和优先级"
 slug: "css-features"
 docmeta:
     id: 前端基础
-    path: 前端基础/CSS
+    path: 前端基础/css
     title: "CSS 三大特性"
     weight: 4
 ---

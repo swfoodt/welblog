@@ -1,10 +1,10 @@
 ---
-title: "Linux基础"
-slug: "Linux基础"
+title: "linux基础"
+slug: "linux基础"
 docmeta:
-  id: "Linux基础"
-  path: "Linux基础"
-  title: "Linux基础"
+  id: "linux基础"
+  path: "linux基础"
+  title: "linux基础"
   weight: 1
 ---
 		

@@ -9,7 +9,7 @@ description: "介绍 Internet 的工作原理、HTTP 协议、Web 浏览器的�
 slug: "internet-introduction"
 docmeta:
     id: internet网络
-    path: internet网络/Internet是什么
+    path: internet网络/internet是什么
     title: "有关 Internet"
     weight: 1
 ---

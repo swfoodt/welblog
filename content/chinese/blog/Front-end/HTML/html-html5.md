@@ -7,7 +7,7 @@ date: "2021-05-31T15:00:00+08:00"
 description: ' html5 新增内容介绍'
 docmeta:
     id: 前端基础
-    path: 前端基础/HTML
+    path: 前端基础/html
     title: "HTML5 新增内容"
     weight: 3
 draft: false

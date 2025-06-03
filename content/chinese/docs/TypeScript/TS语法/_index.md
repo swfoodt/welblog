@@ -1,9 +1,9 @@
 ---
 title: "数据类型"
-slug: "TypeScript/TS语法"
+slug: "typescript/ts语法"
 docmeta:
-  id: "TypeScript"
-  path: "TypeScript/TS语法"
+  id: "typescript"
+  path: "typescript/ts语法"
   title: "数据类型"
-  weight: 3
+  weight: 1
 ---

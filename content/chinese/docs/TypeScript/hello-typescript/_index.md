@@ -1,9 +1,9 @@
 ---
 title: "Hello TypeScript"
-slug: "TypeScript/hello-typescript"
+slug: "typescript/hello-typescript"
 docmeta:
-  id: "TypeScript"
-  path: "TypeScript/hello-typescript"
+  id: "typescript"
+  path: "typescript/hello-typescript"
   title: "Hello TypeScript"
-  weight: 2
+  weight: 1
 ---

@@ -9,7 +9,7 @@ description: "介绍 CSS 书写顺序的最佳实践，帮助前端开发者提�
 slug: "css-order"
 docmeta:
     id: 前端基础
-    path: 前端基础/CSS
+    path: 前端基础/css
     title: "CSS 书写顺序"
     weight: 1
 ---

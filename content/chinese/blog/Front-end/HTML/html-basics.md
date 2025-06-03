@@ -7,7 +7,7 @@ date: "2021-05-31T15:00:00+08:00"
 description: 介绍 HTML 的基础结构、语义化标签、元素与属性，适合前端入门学习者
 docmeta:
     id: 前端基础
-    path: 前端基础/HTML
+    path: 前端基础/html
     title: "HTML 基础介绍"
     weight: 1
 draft: false

@@ -8,8 +8,8 @@ author: "swfoodt"
 description: "一段简单的 TypeScript 代码"
 slug: "hello-typescript"
 docmeta:
-    id: TypeScript
-    path: TypeScript/hello-typescript
+    id: typescript
+    path: typescript/hello-typescript
     title: "Hello TypeScript"
     weight: 1
 ---

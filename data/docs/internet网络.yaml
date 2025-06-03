@@ -1,12 +1,12 @@
-title: 网络相关
-description: 网络相关的文章
+title: Internet网络
+description: Internet 网络相关知识，包含 Internet 的基本概念、协议等内容。
 
 id: internet网络
 routes:
-    internet网络/Internet是什么:
+    internet网络/internet是什么:
         - title: 有关 Internet
           url: /blog/Internet/
           weight: 1
-          path: internet网络/Internet是什么
+          path: internet网络/internet是什么
           id: internet网络
           source: content\chinese\blog\Front-end\Internet\Internet.md

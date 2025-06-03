@@ -8,8 +8,8 @@ author: "swfoodt"
 description: "TypeScript 中的枚举（Enums）是一种特殊的类型，用于定义一组命名的常量。本文介绍了枚举的基本用法和特点。"
 slug: "enum"
 docmeta:
-    id: TypeScript
-    path: TypeScript/TS语法
+    id: typescript
+    path: typescript/ts语法
     title: "枚举"
     weight: 5
 ---

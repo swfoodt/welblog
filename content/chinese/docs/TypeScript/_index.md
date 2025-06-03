@@ -1,10 +1,10 @@
 ---
-title: "TypeScript"
-slug: "TypeScript"
+title: "typescript"
+slug: "typescript"
 docmeta:
-  id: "TypeScript"
-  path: "TypeScript"
-  title: "TypeScript"
+  id: "typescript"
+  path: "typescript"
+  title: "typescript"
   weight: 1
 ---
 		

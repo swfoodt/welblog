@@ -9,8 +9,8 @@ tags: ["linux", "shell", "终端", "常用命令", "命令执行流程", "man手
 draft: false
 slug: "linux-basic"
 docmeta:
-    id: Linux基础
-    path: Linux基础
+    id: linux基础
+    path: linux基础
     title: "Linux 基础命令与使用笔记"
     weight: 1
 ---

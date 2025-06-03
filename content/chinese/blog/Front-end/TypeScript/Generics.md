@@ -8,8 +8,8 @@ author: "swfoodt"
 description: "TypeScript 中的泛型（Generics）是指在定义函数、类或接口时，不预先指定具体的类型，而是在使用时再指定类型。本文介绍了泛型的基本用法和应用场景。"
 slug: "generics"
 docmeta:
-    id: TypeScript
-    path: TypeScript/TS语法
+    id: typescript
+    path: typescript/ts语法
     title: "泛型"
     weight: 6
 ---

@@ -1,12 +1,12 @@
 title: linux基础
-description: 有关 Linux 的基础知识，包含常用命令、文件系统、用户管理等内容。
+description:  Linux 基础知识，包含 Linux 系统的基本命令、文件操作、权限管理等内容。
 
-id: Linux基础
+id: linux基础
 routes:
-    Linux基础:
+    linux基础:
         - title: Linux 基础命令与使用笔记
           url: /blog/25-05-12-linux-basic/
           weight: 1
-          path: Linux基础
-          id: Linux基础
+          path: linux基础
+          id: linux基础
           source: content\chinese\blog\linux\25-05-12-linux-basic.md

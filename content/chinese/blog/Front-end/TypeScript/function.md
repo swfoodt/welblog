@@ -8,8 +8,8 @@ author: "swfoodt"
 description: "TypeScript 中的函数是 JavaScript 的基本组成部分，提供了完整的类型定义。本文介绍了函数的基本用法、可选参数和默认参数等特性。"
 slug: "type-function"
 docmeta:
-    id: TypeScript
-    path: TypeScript/TS语法
+    id: typescript
+    path: typescript/ts语法
     title: "函数"
     weight: 3
 ---

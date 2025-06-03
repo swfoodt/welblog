@@ -9,7 +9,7 @@ description: "介绍 CSS 盒子模型，包括内容、内边距、边框和外�
 slug: "css-box-model"
 docmeta:
     id: 前端基础
-    path: 前端基础/CSS
+    path: 前端基础/css
     title: "CSS 盒子模型"
     weight: 5
 ---
