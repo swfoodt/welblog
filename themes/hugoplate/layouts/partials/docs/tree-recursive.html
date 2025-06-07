@@ -37,33 +37,13 @@
   {{ $path := .path }}
   {{ $pages := index $nodeMap $path | default (slice) }}
   {{ $segments := split (trim $path "/") "/" }}
-  {{ $depth := cond (eq $path "/") 0 (len $segments) }}
-  {{ $indent := printf "ml-%d" (add $depth 4) }}
+  {{ $depth := len $segments }}
+  {{ $indentLevel := cond (eq $depth 0) 0 (mul $depth 4) }}
+  {{ $indent := printf "ml-%d" $indentLevel }}
 
-  {{/*  <div class="{{ $indent }} py-1" x-data="{ open: true }">
-    <div class="cursor-pointer select-none" @click="open = !open">
-      <span class="mr-1 text-sm" x-text="open ? '▼' : '▶'"></span>
-      <a href="{{ printf "/docs%s" $path | relURL }}" class="text-gray-500 font-semibold hover:underline">
-        {{ index (last 1 $segments) 0 }}
-      </a>
-    </div>
 
-    <div x-show="open" class="ml-4 space-y-1">
-      {{ range (sort (where $pages "File.TranslationBaseName" "!=" "_index") "Params.docmeta.weight") }}
-        <div class="text-sm text-blue-500">
-          <a href="{{ .RelPermalink }}"
-             class="hover:underline {{ if eq .RelPermalink $current.RelPermalink }}font-bold text-black{{ end }}">
-            {{ .Params.docmeta.title | default .Title }}
-          </a>
-        </div>
-      {{ end }}
-
-      {{ partial "docs/tree-recursive.html" (dict "parent" $path "tree" $tree "nodeMap" $nodeMap "current" $current "slug" $slug) }}
-    </div>
-  </div>  */}}
-
-  <div class="{{ $indent }} py-1" x-data="{ open: true }">
-    <div class="cursor-pointer select-none" @click="open = !open">
+  <div class=" py-1 bg-light dark:bg-darkmode-light rounded-xl p-6" x-data="{ open: true }">
+    <div class="cursor-pointer select-none mb-3" @click="open = !open">
       <span class="mr-1 text-sm" x-text="open ? '▼' : '▶'"></span>
       <a href="{{ printf "/docs%s" $path | relURL }}"
         class="font-semibold hover:underline transition-colors text-gray-700 dark:text-white dark:hover:text-gray-300">
@@ -71,7 +51,7 @@
       </a>
     </div>
 
-    <div x-show="open" class="ml-4 space-y-1">
+    <div x-show="open" class="ml-4 space-y-3">
       {{ range (sort (where $pages "File.TranslationBaseName" "!=" "_index") "Params.docmeta.weight") }}
         <div class="text-sm">
           <a href="{{ .RelPermalink }}"

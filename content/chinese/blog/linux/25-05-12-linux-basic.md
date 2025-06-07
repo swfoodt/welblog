@@ -3,7 +3,7 @@ title: "linux基础"
 meta_title: "Linux 基础命令与使用笔记"
 description: "覆盖终端、Shell、命令格式、执行流程、常用系统命令和帮助系统的 Linux 入门笔记"
 date: 2025-05-12
-categories: ["Linux基础", "Shell编程"]
+categories: ["Linux基础", "Shell编程", "SRE笔记"]
 author: "swfoodt"
 tags: ["linux", "shell", "终端", "常用命令", "命令执行流程", "man手册"]
 draft: false

@@ -2,54 +2,100 @@
   {{ partial "page-header" . }}
 
   <section class="max-w-6xl mx-auto px-6 py-12">
-    {{ $slug := .Params.slug }}
+    {{ $slug := .Params.docmeta.id }}
+    {{ $pages := where site.RegularPages "Params.docmeta.id" $slug }}
 
-    {{/* 获取所有属于当前文档的页面（文章 + 虚拟目录） */}}
-    {{ $all := where site.Pages "Params.docmeta.id" $slug }}
-
-    {{/* 构造 path => node 的 map，方便后续快速查找 */}}
+    {{/* 构造 nodeMap: path => slice<Page> */}}
     {{ $nodeMap := dict }}
-    {{ range $all }}
-      {{ $path := .Params.docmeta.path | default "" }}
-      {{ $nodeMap = merge $nodeMap (dict $path .) }}
+    {{ range $pages }}
+      {{ $path := print "/" (trim (.Params.docmeta.path | default "") "/") "/" }}
+      {{ $existing := index $nodeMap $path }}
+      {{ if not $existing }}
+        {{ $existing = slice }}
+      {{ end }}
+      {{ $combined := slice }}
+      {{ range $existing }}
+        {{ $combined = $combined | append . }}
+      {{ end }}
+      {{ $combined = $combined | append . }}
+      {{ $nodeMap = merge $nodeMap (dict $path $combined) }}
     {{ end }}
-    {{/* 收集所有中间目录（非叶子文章路径） */}}
+
+    {{/* 构造所有路径（含虚拟目录） */}}
     {{ $allPaths := slice }}
-
-    {{ range $all }}
-      {{ $rawPath := .Params.docmeta.path | default "" }}
-      {{ $segments := split $rawPath "/" }}
+    {{ range $pages }}
+      {{ $raw := .Params.docmeta.path | default "" }}
+      {{ $segments := split $raw "/" }}
       {{ $acc := "" }}
-
       {{ range $segments }}
         {{ if ne . "" }}
           {{ $acc = print $acc "/" . }}
-          {{ $trimmed := trim $acc "/" }}
-          {{ if not (in $allPaths $trimmed) }}
-            {{ $allPaths = $allPaths | append $trimmed }}
+          {{ if not (in $allPaths $acc) }}
+            {{ $allPaths = $allPaths | append $acc }}
           {{ end }}
         {{ end }}
       {{ end }}
     {{ end }}
-    {{/* 构建路径 → 子路径列表 的映射结构 */}}
-    {{ $tree := dict }}
+
     {{ range $allPaths }}
-      {{ $full := . }}
-      {{ $parts := split $full "/" }}
-      {{ $parent := delimit (slice (delimit (first (sub (len $parts) 1) $parts) "/")) "/" }}
-      {{ $parent = cond (eq $parent "") "" (print $parent "/") }}
-      {{ $current := print $full "/" }}
-
-      {{ $children := index $tree $parent | default slice }}
-      {{ $children = $children | append $current }}
-      {{ $tree = merge $tree (dict $parent $children) }}
-
+      {{ $p := print "/" (trim . "/") "/" }}
+      {{ if not (index $nodeMap $p) }}
+        {{ $nodeMap = merge $nodeMap (dict $p (slice)) }}
+      {{ end }}
     {{ end }}
-    <p class="text-sm text-gray-400">tree：{{ $tree }}</p>
-    <p class="text-sm text-gray-400">nodeMap：{{ $nodeMap }}</p>
-    
-    {{/* 渲染根目录（空路径）开始的所有子项 */}}
-    {{ partial "docs/tree-recursive.html" (dict "parent" "/" "tree" $tree "nodeMap" $nodeMap) }}
-  </section>
 
+    {{ $.Scratch.Set "tree" (dict) }}
+    {{ range $allPaths }}
+      {{ $p := print "/" (trim . "/") "/" }}
+      {{ $parts := split (trim $p "/") "/" }}
+      {{ $parent := cond (gt (len $parts) 1) (print "/" (delimit (first (sub (len $parts) 1) $parts) "/") "/") "/" }}
+      {{ $tree := $.Scratch.Get "tree" }}
+      {{ $existing := index $tree $parent }}
+      {{ if not $existing }}
+        {{ $existing = slice }}
+      {{ end }}
+      {{ $updated := slice }}
+      {{ range $existing }}
+        {{ $updated = $updated | append . }}
+      {{ end }}
+      {{ $updated = $updated | append $p }}
+      {{ $.Scratch.SetInMap "tree" $parent $updated }}
+    {{ end }}
+
+    {{ $tree := $.Scratch.Get "tree" }}
+    {{ $currentPath := print "/" (trim (.Params.docmeta.path | default "") "/") "/" }}
+    {{/*  {{ $articles := index $nodeMap $currentPath }}  */}}
+
+    {{ $articles := slice }}
+    {{ if or (eq $currentPath "/") (eq $currentPath (print "/" $slug "/")) }}
+      {{/* 如果是文档首页（根目录），则展示全部 */}}
+      {{ $articles = $pages }}
+    {{ else }}
+      {{ $articles = index $nodeMap $currentPath }}
+    {{ end }}
+
+    <div class="container">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 左侧文档树 -->
+        <div class="lg:col-span-4 ">
+          {{ partial "docs/tree-recursive.html" (dict "parent" "/" "tree" $tree "nodeMap" $nodeMap "current" . "slug" $slug) }}
+        </div>
+
+        <!-- 右侧文章列表 -->
+        <div class="lg:col-span-8">
+          {{ if $articles }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {{ range $articles }}
+                {{ partial "components/blog-card.html" . }}
+              {{ end }}
+            </div>
+          {{ else }}
+            <p class="text-gray-400">当前目录无文章。</p>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+
+
+  </section>
 {{ end }}
