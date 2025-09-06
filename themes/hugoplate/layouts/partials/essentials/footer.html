@@ -53,6 +53,12 @@
       <p>
         {{ site.Params.copyright | markdownify }}
       </p>
+      
+      <a href="https://beian.mps.gov.cn/#/query/webSearch?code=63010502000640" rel="noreferrer" target="_blank">
+        {{ $img := resources.Get "images/beian.png" }}
+        <img src="{{ $img.RelPermalink }}" alt="备案图标" style="display:inline; height: 16px; margin-bottom:2px;; margin-right:4px;"/>
+        青公网安备63010502000640号
+      </a>
       <a href="https://beian.miit.gov.cn">青ICP备2025004796号-1</a>
     </div>
   </div>
