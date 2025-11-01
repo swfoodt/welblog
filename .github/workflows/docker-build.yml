@@ -1,16 +1,23 @@
-name: Docker Build and Test
+name: Docker Build, Test and Deploy
 
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:  # 允许手动触发
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_IMAGE: welblog
+  ENABLE_DEPLOY: false  # ⚠️ 先设为false，测试通过后再改为true
 
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
     
     steps:
+    # ===== 构建阶段 =====
     - name: 📥 Checkout code
       uses: actions/checkout@v4
     
@@ -24,7 +31,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
     
     - name: 📦 Install dependencies
       run: npm ci
@@ -39,53 +45,232 @@ jobs:
           exit 1
         fi
         
-        echo "✅ Build completed successfully"
+        echo "✅ Site build completed"
     
     - name: 🐳 Build Docker image
       run: |
         SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
         
-        echo "Building Docker image with tag: $SHORT_SHA"
-        docker build -t welblog:$SHORT_SHA -t welblog:latest .
+        echo "Building Docker image..."
+        docker build \
+          -t $DOCKER_USERNAME/$DOCKER_IMAGE:$SHORT_SHA \
+          -t $DOCKER_USERNAME/$DOCKER_IMAGE:latest \
+          .
         
         echo "✅ Docker image built successfully"
+        echo "IMAGE_TAG=$SHORT_SHA" >> $GITHUB_ENV
     
+    # ===== 测试阶段 =====
     - name: 🧪 Test Docker container
       run: |
         echo "Starting test container..."
-        docker run -d -p 8080:80 --name test-blog welblog:latest
+        docker run -d -p 8080:80 --name test-blog $DOCKER_USERNAME/$DOCKER_IMAGE:latest
         
-        echo "Waiting for container to be ready..."
+        echo "Waiting for container..."
         sleep 5
         
         echo "Testing HTTP response..."
         curl -f http://localhost:8080 || exit 1
         
-        echo "Checking container logs..."
+        echo "Checking container health..."
+        docker ps | grep test-blog
+        
+        echo "Container logs:"
         docker logs test-blog
         
-        echo "Stopping test container..."
+        echo "Cleaning up..."
         docker stop test-blog
         docker rm test-blog
         
-        echo "✅ All tests passed!"
+        echo "✅ All tests passed"
     
+    # ===== 推送阶段（可选）=====
+    - name: 📤 Login to Docker Hub
+      if: env.ENABLE_DEPLOY == 'true' && github.event_name == 'push'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: 📤 Push to Docker Hub
+      if: env.ENABLE_DEPLOY == 'true' && github.event_name == 'push'
+      run: |
+        echo "Pushing images to Docker Hub..."
+        
+        docker push $DOCKER_USERNAME/$DOCKER_IMAGE:${{ env.IMAGE_TAG }}
+        docker push $DOCKER_USERNAME/$DOCKER_IMAGE:latest
+        
+        echo "✅ Images pushed successfully"
+        echo "- $DOCKER_USERNAME/$DOCKER_IMAGE:${{ env.IMAGE_TAG }}"
+        echo "- $DOCKER_USERNAME/$DOCKER_IMAGE:latest"
+    
+    # ===== 部署阶段（可选）=====
+    - name: 🚀 Deploy to server
+      if: env.ENABLE_DEPLOY == 'true' && github.event_name == 'push'
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          echo "=== Starting deployment ==="
+          
+          # 登录Docker Hub
+          echo "Logging in to Docker Hub..."
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          
+          # 拉取最新镜像
+          echo "Pulling latest image..."
+          docker pull ${{ secrets.DOCKER_USERNAME }}/welblog:latest
+          
+          # 停止旧容器（如果存在）
+          echo "Stopping old container..."
+          docker stop welblog-docker 2>/dev/null || echo "No container to stop"
+          docker rm welblog-docker 2>/dev/null || echo "No container to remove"
+          
+          # 启动新容器（端口8081，不影响传统部署的80端口）
+          echo "Starting new container..."
+          docker run -d \
+            --name welblog-docker \
+            -p 8081:80 \
+            --restart unless-stopped \
+            ${{ secrets.DOCKER_USERNAME }}/welblog:latest
+          
+          # 验证部署
+          echo "Waiting for container to start..."
+          sleep 5
+          
+          echo "Verifying deployment..."
+          docker ps | grep welblog-docker || exit 1
+          curl -f http://localhost:8081 || exit 1
+          
+          # 清理旧镜像（保留最新的2个版本）
+          echo "Cleaning up old images..."
+          docker image prune -a -f --filter "until=72h" || true
+          
+          echo "=== Deployment successful ==="
+          echo "Container running on port 8081"
+    
+    # ===== 生成报告 =====
     - name: 📊 Generate summary
+      if: always()
       run: |
         echo "## 🎉 Build Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Build Information" >> $GITHUB_STEP_SUMMARY
         echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Short SHA**: \`$(echo ${{ github.sha }} | cut -c1-7)\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Short SHA**: \`${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
         echo "- **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
         echo "- **Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Docker Image" >> $GITHUB_STEP_SUMMARY
-        echo "- **Tag**: \`welblog:$(echo ${{ github.sha }} | cut -c1-7)\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Size**: \`$(docker images welblog:latest --format '{{.Size}}')\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Repository**: \`$DOCKER_USERNAME/$DOCKER_IMAGE\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Tag**: \`${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Size**: \`$(docker images $DOCKER_USERNAME/$DOCKER_IMAGE:latest --format '{{.Size}}')\`" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "### Status" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ Hugo build successful" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ Docker image built" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Container health check passed" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ HTTP response test passed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Container tests passed" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ env.ENABLE_DEPLOY }}" = "true" ]; then
+          echo "- ✅ Pushed to Docker Hub" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Deployed to server (port 8081)" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "- ⏭️ Deployment skipped (ENABLE_DEPLOY=false)" >> $GITHUB_STEP_SUMMARY
+        fi
+
+# 简化版（仅构建和测试）
+# ---------------------------------
+# name: Docker Build and Test
+
+# on:
+#   push:
+#     branches: [ main, master ]
+#   pull_request:
+#     branches: [ main, master ]
+
+# jobs:
+#   build-and-test:
+#     runs-on: ubuntu-latest
+    
+#     steps:
+#     - name: 📥 Checkout code
+#       uses: actions/checkout@v4
+    
+#     - name: 🔧 Setup Hugo
+#       uses: peaceiris/actions-hugo@v3
+#       with:
+#         hugo-version: 'latest'
+#         extended: true
+    
+#     - name: 🔧 Setup Node.js
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: '18'
+#         cache: 'npm'
+    
+#     - name: 📦 Install dependencies
+#       run: npm ci
+    
+#     - name: 🔨 Build Hugo site
+#       run: |
+#         echo "Building site..."
+#         npm run build
+        
+#         if [ ! -f "public/index.html" ]; then
+#           echo "❌ Build failed: index.html not found"
+#           exit 1
+#         fi
+        
+#         echo "✅ Build completed successfully"
+    
+#     - name: 🐳 Build Docker image
+#       run: |
+#         SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+        
+#         echo "Building Docker image with tag: $SHORT_SHA"
+#         docker build -t welblog:$SHORT_SHA -t welblog:latest .
+        
+#         echo "✅ Docker image built successfully"
+    
+#     - name: 🧪 Test Docker container
+#       run: |
+#         echo "Starting test container..."
+#         docker run -d -p 8080:80 --name test-blog welblog:latest
+        
+#         echo "Waiting for container to be ready..."
+#         sleep 5
+        
+#         echo "Testing HTTP response..."
+#         curl -f http://localhost:8080 || exit 1
+        
+#         echo "Checking container logs..."
+#         docker logs test-blog
+        
+#         echo "Stopping test container..."
+#         docker stop test-blog
+#         docker rm test-blog
+        
+#         echo "✅ All tests passed!"
+    
+#     - name: 📊 Generate summary
+#       run: |
+#         echo "## 🎉 Build Summary" >> $GITHUB_STEP_SUMMARY
+#         echo "" >> $GITHUB_STEP_SUMMARY
+#         echo "### Build Information" >> $GITHUB_STEP_SUMMARY
+#         echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+#         echo "- **Short SHA**: \`$(echo ${{ github.sha }} | cut -c1-7)\`" >> $GITHUB_STEP_SUMMARY
+#         echo "- **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+#         echo "- **Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+#         echo "" >> $GITHUB_STEP_SUMMARY
+#         echo "### Docker Image" >> $GITHUB_STEP_SUMMARY
+#         echo "- **Tag**: \`welblog:$(echo ${{ github.sha }} | cut -c1-7)\`" >> $GITHUB_STEP_SUMMARY
+#         echo "- **Size**: \`$(docker images welblog:latest --format '{{.Size}}')\`" >> $GITHUB_STEP_SUMMARY
+#         echo "" >> $GITHUB_STEP_SUMMARY
+#         echo "### Test Results" >> $GITHUB_STEP_SUMMARY
+#         echo "- ✅ Hugo build successful" >> $GITHUB_STEP_SUMMARY
+#         echo "- ✅ Docker image built" >> $GITHUB_STEP_SUMMARY
+#         echo "- ✅ Container health check passed" >> $GITHUB_STEP_SUMMARY
+#         echo "- ✅ HTTP response test passed" >> $GITHUB_STEP_SUMMARY
