@@ -1,0 +1,91 @@
+name: Docker Build and Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 🔧 Setup Hugo
+      uses: peaceiris/actions-hugo@v3
+      with:
+        hugo-version: 'latest'
+        extended: true
+    
+    - name: 🔧 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: 📦 Install dependencies
+      run: npm ci
+    
+    - name: 🔨 Build Hugo site
+      run: |
+        echo "Building site..."
+        npm run build
+        
+        if [ ! -f "public/index.html" ]; then
+          echo "❌ Build failed: index.html not found"
+          exit 1
+        fi
+        
+        echo "✅ Build completed successfully"
+    
+    - name: 🐳 Build Docker image
+      run: |
+        SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+        
+        echo "Building Docker image with tag: $SHORT_SHA"
+        docker build -t welblog:$SHORT_SHA -t welblog:latest .
+        
+        echo "✅ Docker image built successfully"
+    
+    - name: 🧪 Test Docker container
+      run: |
+        echo "Starting test container..."
+        docker run -d -p 8080:80 --name test-blog welblog:latest
+        
+        echo "Waiting for container to be ready..."
+        sleep 5
+        
+        echo "Testing HTTP response..."
+        curl -f http://localhost:8080 || exit 1
+        
+        echo "Checking container logs..."
+        docker logs test-blog
+        
+        echo "Stopping test container..."
+        docker stop test-blog
+        docker rm test-blog
+        
+        echo "✅ All tests passed!"
+    
+    - name: 📊 Generate summary
+      run: |
+        echo "## 🎉 Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Build Information" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Short SHA**: \`$(echo ${{ github.sha }} | cut -c1-7)\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Docker Image" >> $GITHUB_STEP_SUMMARY
+        echo "- **Tag**: \`welblog:$(echo ${{ github.sha }} | cut -c1-7)\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Size**: \`$(docker images welblog:latest --format '{{.Size}}')\`" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Hugo build successful" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Docker image built" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Container health check passed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ HTTP response test passed" >> $GITHUB_STEP_SUMMARY
