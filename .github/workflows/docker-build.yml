@@ -10,7 +10,7 @@ on:
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_IMAGE: welblog
-  ENABLE_DEPLOY: true  # 链接到服务器启动部署流程
+  ENABLE_DEPLOY: false  # 链接到服务器启动部署流程
 
 jobs:
   build-test-deploy:
