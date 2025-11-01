@@ -1,0 +1,9 @@
+node_modules/
+resources/
+.git/
+.github/
+.vscode/
+.devcontainer/
+*.log
+.hugo_build.lock
+.DS_Store
