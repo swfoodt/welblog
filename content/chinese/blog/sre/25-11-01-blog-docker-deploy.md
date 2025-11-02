@@ -157,25 +157,22 @@ services:
 
 ### 4. GitHub Actions CI/CD
 #### GitHub Actions 工作流设计
-构建了完整的自动化流水线，实现代码推送后的自动构建、测试和验证：
+构建了完整的自动化流水线，实现代码推送后的自动构建、测试、验证、上传hub、直传服务器、部署（仅展示流程）：
 ```yaml
-name: Docker Build and Test
-name: Docker Build, Test and Deploy
+name: Docker Build, Push and Deploy
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_IMAGE: welblog
-  ENABLE_DEPLOY: true  # 链接到服务器启动部署流程
+  ENABLE_DEPLOY: true
 
 jobs:
-  build-test-deploy:
+  build-push-deploy:
     runs-on: ubuntu-latest
     
     steps:
@@ -199,149 +196,65 @@ jobs:
     
     - name: 🔨 Build Hugo site
       run: |
-        echo "Building site..."
-        npm run build
-        
-        if [ ! -f "public/index.html" ]; then
-          echo "❌ Build failed: index.html not found"
-          exit 1
-        fi
-        
-        echo "✅ Site build completed"
+        ...
     
     - name: 🐳 Build Docker image
       run: |
-        SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-        
-        echo "Building Docker image..."
-        docker build \
-          -t $DOCKER_USERNAME/$DOCKER_IMAGE:$SHORT_SHA \
-          -t $DOCKER_USERNAME/$DOCKER_IMAGE:latest \
-          .
-        
-        echo "✅ Docker image built successfully"
-        echo "IMAGE_TAG=$SHORT_SHA" >> $GITHUB_ENV
+        ...
     
     # ===== 测试阶段 =====
     - name: 🧪 Test Docker container
       run: |
-        echo "Starting test container..."
-        docker run -d -p 8080:80 --name test-blog $DOCKER_USERNAME/$DOCKER_IMAGE:latest
-        
-        echo "Waiting for container..."
-        sleep 5
-        
-        echo "Testing HTTP response..."
-        curl -f http://localhost:8080 || exit 1
-        
-        echo "Checking container health..."
-        docker ps | grep test-blog
-        
-        echo "Container logs:"
-        docker logs test-blog
-        
-        echo "Cleaning up..."
-        docker stop test-blog
-        docker rm test-blog
-        
-        echo "✅ All tests passed"
+        ...
     
-    # ===== 推送阶段（可选）=====
+    # ===== 推送到Docker Hub =====
     - name: 📤 Login to Docker Hub
-      if: env.ENABLE_DEPLOY == 'true' && github.event_name == 'push'
+      if: github.event_name == 'push'
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
     - name: 📤 Push to Docker Hub
+      if: github.event_name == 'push'
+      run: |
+        ...
+    
+    # ===== 导出镜像（修复后）=====
+    - name: 📦 Export image for deployment
       if: env.ENABLE_DEPLOY == 'true' && github.event_name == 'push'
       run: |
-        echo "Pushing images to Docker Hub..."
-        
-        docker push $DOCKER_USERNAME/$DOCKER_IMAGE:${{ env.IMAGE_TAG }}
-        docker push $DOCKER_USERNAME/$DOCKER_IMAGE:latest
-        
-        echo "✅ Images pushed successfully"
-        echo "- $DOCKER_USERNAME/$DOCKER_IMAGE:${{ env.IMAGE_TAG }}"
-        echo "- $DOCKER_USERNAME/$DOCKER_IMAGE:latest"
+        ...
     
-    # ===== 部署阶段（可选）=====
-    - name: 🚀 Deploy to server
+    # ===== 传输到服务器 =====
+    - name: 📤 Transfer image to server
+      if: env.ENABLE_DEPLOY == 'true' && github.event_name == 'push'
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SERVER_PORT }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "${{ env.IMAGE_FILENAME }}"
+        target: "/tmp/"
+    
+    # ===== 部署 =====
+    - name: 🚀 Deploy on server
       if: env.ENABLE_DEPLOY == 'true' && github.event_name == 'push'
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SERVER_PORT }}
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          echo "=== Starting deployment ==="
-          
-          # 登录Docker Hub
-          echo "Logging in to Docker Hub..."
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          
-          # 拉取最新镜像
-          echo "Pulling latest image..."
-          docker pull ${{ secrets.DOCKER_USERNAME }}/welblog:latest
-          
-          # 停止旧容器（如果存在）
-          echo "Stopping old container..."
-          docker stop welblog-docker 2>/dev/null || echo "No container to stop"
-          docker rm welblog-docker 2>/dev/null || echo "No container to remove"
-          
-          # 启动新容器（端口8081，不影响传统部署的80端口）
-          echo "Starting new container..."
-          docker run -d \
-            --name welblog-docker \
-            -p 8081:80 \
-            --restart unless-stopped \
-            ${{ secrets.DOCKER_USERNAME }}/welblog:latest
-          
-          # 验证部署
-          echo "Waiting for container to start..."
-          sleep 5
-          
-          echo "Verifying deployment..."
-          docker ps | grep welblog-docker || exit 1
-          curl -f http://localhost:8081 || exit 1
-          
-          # 清理旧镜像（保留最新的2个版本）
-          echo "Cleaning up old images..."
-          docker image prune -a -f --filter "until=72h" || true
-          
-          echo "=== Deployment successful ==="
-          echo "Container running on port 8081"
+          ...
     
-    # ===== 生成报告 =====
+    # ===== 报告 =====
     - name: 📊 Generate summary
       if: always()
       run: |
-        echo "## 🎉 Build Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Build Information" >> $GITHUB_STEP_SUMMARY
-        echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Short SHA**: \`${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Docker Image" >> $GITHUB_STEP_SUMMARY
-        echo "- **Repository**: \`$DOCKER_USERNAME/$DOCKER_IMAGE\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Tag**: \`${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Size**: \`$(docker images $DOCKER_USERNAME/$DOCKER_IMAGE:latest --format '{{.Size}}')\`" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Status" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Hugo build successful" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Docker image built" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Container tests passed" >> $GITHUB_STEP_SUMMARY
-        
-        if [ "${{ env.ENABLE_DEPLOY }}" = "true" ]; then
-          echo "- ✅ Pushed to Docker Hub" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Deployed to server (port 8081)" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "- ⏭️ Deployment skipped (ENABLE_DEPLOY=false)" >> $GITHUB_STEP_SUMMARY
-        fi
+        ...
 ```
 
 #### 版本管理策略
@@ -460,19 +373,23 @@ location / {
 2. **（不适用）手动拉取镜像**：
    - 背离了自动化部署的初衷。
 
-3. **使用云厂商容器镜像服务（ACR/CCR）（尚未尝试）**
+3. **（尚未尝试）使用云厂商容器镜像服务（ACR/CCR）**
    - 将镜像推送到云厂商的容器镜像服务，利用其稳定的网络环境进行拉取。
    - 需要额外配置CI/CD流水线，将镜像同时推送到Docker Hub和云厂商镜像服务。
+
+4. **（最终选择）GitHub Actions构建后直接传输到服务器**
+   - 通过SSH将构建好的镜像直接传输到服务器，避免拉取失败问题。
+   - 需要在GitHub Actions中增加传输步骤。
 
 
 **技术方案完整性**：
 
-虽然未在生产环境部署容器，但整个技术方案已完整验证：
+实现了以下目标：
 
 1. ✅ 本地开发环境：`docker-compose up` 一键启动
-2. ✅ CI/CD 验证：GitHub Actions 自动构建、测试
+2. ✅ CI/CD 流程：GitHub Actions 自动构建、测试、上传镜像、部署
 3. ✅ 镜像仓库：Docker Hub 公开仓库，版本管理完整
-4. ✅ 在有网络条件的环境下，可以直接部署
+4. ✅ 在有网络条件的环境下，可以直接hub拉取部署，无网络环境时可通过传输镜像方式部署。
 
 
 ## 技术亮点
@@ -526,7 +443,11 @@ git push → GitHub Actions触发
   ↓
 登录Docker Hub并推送镜像
   ↓
-部署到云服务器（可选）
+无网络环境下，传输镜像到服务器
+  ↓
+通过SSH将镜像传输到服务器
+  ↓
+部署到云服务器
   ↓
 生成构建报告
 ```
@@ -552,14 +473,13 @@ open http://localhost:8080
 
 ### 部署到生产
 ```bash
-# 1. 构建
-npm run build
-
-# 2. 构建镜像
-docker build -t blog:v1.0 .
-
-# 3. 运行
-docker run -d -p 80:80 --restart unless-stopped blog:v1.0
+# 推送代码到github
+git push github main
+# GitHub Actions会自动构建并部署
+# 并且通过vercel托管
+# 推送代码到云服务器仓库
+git push origin main
+# 服务器端Git Hook会自动构建并部署
 ```
 
 ## 性能对比
@@ -571,7 +491,7 @@ docker run -d -p 80:80 --restart unless-stopped blog:v1.0
 | 环境一致性 | 依赖服务器 | ✅ 完全一致 |
 | 可移植性 | ❌ 需要配置 | ✅ 一键部署 |
 | 回滚能力 | 手动Git | ✅ 版本化镜像 |
-| 资源占用 | ~50MB | ~80MB |
+| 资源占用 | ~50MB | ~70MB |
 
 ## 参考资源
 
