@@ -396,14 +396,14 @@ fi
 - 自动健康检查，确保回滚成功
 - 彩色输出，操作状态一目了然
 
-## 遇到的技术挑战
+## 遇到的问题及解决方案
 
-### 挑战1：Hugo版本兼容性
+### 问题1：Hugo版本兼容性
 
 **问题**：Alpine Linux官方仓库的Hugo版本（0.139）低于项目要求（0.141），导致构建失败。
 
 **错误信息**：
-```
+```bash
 Error: permalink attribute not recognised
 WARN Module "hugoplate" is not compatible with this Hugo version
 ```
@@ -413,12 +413,12 @@ WARN Module "hugoplate" is not compatible with this Hugo version
 
 ---
 
-### 挑战2：Windows文件系统锁定
+### 问题2：Windows文件系统锁定
 
 **问题**：在Windows环境执行 `npm run build` 时遇到文件占用错误。
 
 **错误信息**：
-```
+```bash
 Error: The requested operation cannot be performed on a file 
 with a user-mapped section open
 ```
@@ -446,12 +446,12 @@ npm run build
 
 ---
 
-### 挑战3：容器端口重定向问题
+### 问题3：容器端口重定向问题
 
 **问题**：容器运行在8080端口，首页正常访问，但点击导航链接后端口号丢失。
 
 **现象**：
-```
+```bash
 期望: http://localhost:8080/blog
 实际: http://localhost/blog  (404错误)
 ```
@@ -459,7 +459,7 @@ npm run build
 **问题分析**：
 
 通过浏览器开发者工具（F12）分析网络请求：
-```
+```bash
 请求: GET http://localhost:8080/blog
 响应: 301 Moved Permanently
 Location: http://localhost/blog/  ← 端口号丢失
@@ -500,12 +500,12 @@ Location: http://localhost/blog/  ← 端口号丢失
 
 ---
 
-### 挑战4：云服务器Docker Hub访问受限
+### 问题4：云服务器Docker Hub访问受限
 
 **问题**：云服务器拉取个人镜像时遇到超时错误。
 
 **错误信息**：
-```
+```bash
 Error response from daemon: Get "https://registry-1.docker.io/v2/": 
 context deadline exceeded
 ```
@@ -524,7 +524,7 @@ context deadline exceeded
    - 使用VPN：违反云服务商使用条款
 
 **最终方案：双路径部署**
-```
+```bash
 方案设计：
 ├─ Docker Hub：版本备份，任何环境都可拉取
 └─ 直接传输：GitHub Actions构建后通过SCP传输镜像到服务器
@@ -549,12 +549,6 @@ context deadline exceeded
     scp image.tar.gz server:/tmp/
     ssh server "docker load -i /tmp/image.tar.gz"
 ```
-
-**收获**：
-1. 理解了Docker Hub和镜像加速器的工作机制
-2. 掌握了在网络受限环境下的部署策略
-3. 学会了技术方案的评估和权衡
-
 ---
 
 ## 架构设计亮点
@@ -584,7 +578,7 @@ context deadline exceeded
 ### 2. 镜像优化策略
 
 最终镜像大小约60MB：
-```
+```bash
 组成：
 nginx:alpine 基础镜像    ~7MB
 网站静态文件            ~18MB
@@ -601,7 +595,7 @@ nginx配置文件           <1MB
 - .dockerignore排除无关文件
 
 ### 3. 完整的CI/CD流水线
-```
+```bash
 自动化流程：
 git push → 触发GitHub Actions
   ↓
@@ -777,7 +771,7 @@ docker logs welblog-docker
    - 定期更新基础镜像
 
 ## 项目文件结构
-```
+```bash
 welblog/
 ├── .github/
 │   └── workflows/
