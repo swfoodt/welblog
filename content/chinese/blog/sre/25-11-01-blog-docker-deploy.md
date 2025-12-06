@@ -2,6 +2,7 @@
 title: "从零实现个人博客的Docker容器化部署"
 date: 2025-11-01
 draft: false
+author: "swfoodt"
 description: "记录将Hugo博客从传统部署迁移到Docker容器化的完整过程，包括CI/CD、版本管理、回滚机制等实践经验"
 categories: ["DevOps", "Docker"]
 tags: ["Docker", "Hugo", "Nginx", "CI/CD", "GitHub Actions", "容器化"]
